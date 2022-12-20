@@ -1,0 +1,531 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.0
+-- https://www.phpmyadmin.net/
+--
+-- Hôte : 127.0.0.1:3306
+-- Généré le : mar. 20 déc. 2022 à 16:10
+-- Version du serveur : 8.0.31
+-- Version de PHP : 8.0.26
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de données : `stats_digifisc_db`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `anneefiscale`
+--
+
+DROP TABLE IF EXISTS `anneefiscale`;
+CREATE TABLE IF NOT EXISTS `anneefiscale` (
+  `ANNEEFISCALEID` int NOT NULL,
+  `ANNEEFISCALELIB` longtext,
+  `ANNEEFISCALEDATEDEBUT` date DEFAULT NULL,
+  `ANNEEFISCALEDATEFIN` date DEFAULT NULL,
+  `ANNEEFISCALESTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`ANNEEFISCALEID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `banque`
+--
+
+DROP TABLE IF EXISTS `banque`;
+CREATE TABLE IF NOT EXISTS `banque` (
+  `BANQUEID` int NOT NULL,
+  `BANQUECODE` varchar(1024) DEFAULT NULL,
+  `BANQUELIB` varchar(1024) DEFAULT NULL,
+  `BANQUESTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`BANQUEID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `catusager`
+--
+
+DROP TABLE IF EXISTS `catusager`;
+CREATE TABLE IF NOT EXISTS `catusager` (
+  `CATUSAGERID` varchar(20) NOT NULL,
+  `CATUSAGERCODE` varchar(20) DEFAULT NULL,
+  `CATUSAGERLIB` varchar(1024) DEFAULT NULL,
+  `CATUSAGERSTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`CATUSAGERID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `centreimpot`
+--
+
+DROP TABLE IF EXISTS `centreimpot`;
+CREATE TABLE IF NOT EXISTS `centreimpot` (
+  `CENTREID` bigint NOT NULL,
+  `CENTREDESIGNATION` varchar(1024) DEFAULT NULL,
+  `CENTRESTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`CENTREID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `centreusager`
+--
+
+DROP TABLE IF EXISTS `centreusager`;
+CREATE TABLE IF NOT EXISTS `centreusager` (
+  `CENTREUSAGERID` bigint NOT NULL,
+  `USAGERID` bigint NOT NULL,
+  `CENTREID` bigint NOT NULL,
+  `CENTREUSAGERDATEDEBUT` date DEFAULT NULL,
+  `CENTREUSAGERDATEFIN` date DEFAULT NULL,
+  `CENTREUSAGERDATEDEBUTSTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`CENTREUSAGERID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `classefiscale`
+--
+
+DROP TABLE IF EXISTS `classefiscale`;
+CREATE TABLE IF NOT EXISTS `classefiscale` (
+  `CLASSEFISCALEID` varchar(10) NOT NULL,
+  `CLASSEFISCALECODE` varchar(10) DEFAULT NULL,
+  `CLASSEFISCALELIB` varchar(1024) DEFAULT NULL,
+  `CLASSEFISCALESTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`CLASSEFISCALEID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Impots sur les revenus,\r\nImpots sur les b?n?fices,\r\n                                  -&#';
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `declaration`
+--
+
+DROP TABLE IF EXISTS `declaration`;
+CREATE TABLE IF NOT EXISTS `declaration` (
+  `DECLARATIONID` bigint NOT NULL,
+  `TYPEIMPOTID` varchar(10) NOT NULL,
+  `TYPEDECLARATIONID` int NOT NULL,
+  `USAGERID` bigint NOT NULL,
+  `USA_USAGERID` bigint NOT NULL,
+  `PERIODEDECLAID` int NOT NULL,
+  `DECLARATIONREF` varchar(1024) DEFAULT NULL,
+  `DECLARATIONLIB` longtext,
+  `DECLARATIONDATEVALEUR` date DEFAULT NULL,
+  `DECLARATIONMONTTOTAL` float(20,0) DEFAULT NULL,
+  `DECLARATIONSOLDE` float(20,0) DEFAULT NULL,
+  `DECLARATIONDATECREA` date DEFAULT NULL,
+  `DECLARATIONDATEMODIF` date DEFAULT NULL,
+  `DECLARATIONDATESUPP` date DEFAULT NULL,
+  `DECLARATIONSTATUT` enum('BROUILLON','ENREGISTRE','SUPPRIME','VALIDE','GENERE') DEFAULT NULL,
+  PRIMARY KEY (`DECLARATIONID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `declarationligne`
+--
+
+DROP TABLE IF EXISTS `declarationligne`;
+CREATE TABLE IF NOT EXISTS `declarationligne` (
+  `DECLARATIONID` bigint NOT NULL,
+  `PARAMCHAMPID` bigint NOT NULL,
+  `DECLARATIONLIGNEDATE` bigint DEFAULT NULL,
+  `DECLARATIONLIGNEVALEUR` float(20,0) DEFAULT NULL,
+  `DECLARATIONLIGNESTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`DECLARATIONID`,`PARAMCHAMPID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `impotcat`
+--
+
+DROP TABLE IF EXISTS `impotcat`;
+CREATE TABLE IF NOT EXISTS `impotcat` (
+  `IMPOTCATID` int NOT NULL,
+  `CATUSAGERID` varchar(20) NOT NULL,
+  `TYPEIMPOTID` varchar(10) NOT NULL,
+  `IMPOTCATDATEDEB` date DEFAULT NULL,
+  `IMPOTCATDATEFIN` date DEFAULT NULL,
+  `IMPOTCATSTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`IMPOTCATID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `logchamp`
+--
+
+DROP TABLE IF EXISTS `logchamp`;
+CREATE TABLE IF NOT EXISTS `logchamp` (
+  `LOGCHAMPID` bigint NOT NULL,
+  `LOGTABLEID` bigint NOT NULL,
+  `LOGCHAMPNOM` varchar(1024) DEFAULT NULL,
+  `LOGCHAMPANCIENNEVALEUR` longtext,
+  PRIMARY KEY (`LOGCHAMPID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `logtable`
+--
+
+DROP TABLE IF EXISTS `logtable`;
+CREATE TABLE IF NOT EXISTS `logtable` (
+  `LOGTABLEID` bigint NOT NULL,
+  `PARAMTABLEID` int NOT NULL,
+  `LOGTABLEOCCURENCEID` varchar(1024) DEFAULT NULL,
+  `LOGTABLENOMTABLE` varchar(1024) DEFAULT NULL,
+  `LOGTABLETYPE` enum('MODIFICATION','SUPPRESSION') DEFAULT NULL,
+  `LOGTABLEDATECREA` datetime DEFAULT NULL,
+  `LOGTABLEUSERID` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`LOGTABLEID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `modedeclaration`
+--
+
+DROP TABLE IF EXISTS `modedeclaration`;
+CREATE TABLE IF NOT EXISTS `modedeclaration` (
+  `MODEDECLARATIONID` int NOT NULL,
+  `MODEDECLARATIONLIB` varchar(1024) DEFAULT NULL,
+  `MODEDECLARATIONSTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`MODEDECLARATIONID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Mensuel, Trimestriel, Semestriel, Annuel';
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `modepaiement`
+--
+
+DROP TABLE IF EXISTS `modepaiement`;
+CREATE TABLE IF NOT EXISTS `modepaiement` (
+  `MODEPAIEMENTID` varchar(20) NOT NULL,
+  `MODEPAIEMENTCODE` varchar(20) DEFAULT NULL,
+  `MODEPAIEMENTLIB` varchar(1024) DEFAULT NULL,
+  PRIMARY KEY (`MODEPAIEMENTID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='ESPECE,\r\nCHEQUE,\r\nVIREMENT,\r\nPRELEVEMENT,\r\n                                 -&';
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `paiement`
+--
+
+DROP TABLE IF EXISTS `paiement`;
+CREATE TABLE IF NOT EXISTS `paiement` (
+  `PAIEMENTID` bigint NOT NULL,
+  `BANQUEID` int NOT NULL,
+  `MODEPAIEMENTID` varchar(20) NOT NULL,
+  `PAIEMENTREF` longtext,
+  `PAIEMENTDATEVALEUR` date DEFAULT NULL,
+  `PAIEMENTMONT` float(8,2) DEFAULT NULL,
+  `PAIEMENTNUMVIREMENTCHEQ` varchar(1024) DEFAULT NULL,
+  `PAIEMENTNUMCOMPTEBANQUE` varchar(1024) DEFAULT NULL,
+  `PAIEMENTDATECREA` date DEFAULT NULL,
+  `PAIEMENTSTATUT` enum('BROUILLON','ENREGISTRE','TRANSFERE','TRAITE','VALIDE','REJETE','ANNULE','CLOTURE') DEFAULT NULL,
+  PRIMARY KEY (`PAIEMENTID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `paiementdeclare`
+--
+
+DROP TABLE IF EXISTS `paiementdeclare`;
+CREATE TABLE IF NOT EXISTS `paiementdeclare` (
+  `PAIEMENTDECLAREID` bigint NOT NULL,
+  `PAIEMENTID` bigint NOT NULL,
+  `DECLARATIONID` bigint NOT NULL,
+  `PAIEMENTDECLAREDATEVALEUR` datetime DEFAULT NULL,
+  `PAIEMENTDECLAREMONT` float(20,0) DEFAULT NULL,
+  `PAIEMENTDECLARESTATUT` enum('BROUILLON','ENREGISTRE','TRANSFERE','TRAITE','VALIDE','REJETE','ANNULE','CLOTURE') DEFAULT NULL,
+  PRIMARY KEY (`PAIEMENTDECLAREID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `paramchamp`
+--
+
+DROP TABLE IF EXISTS `paramchamp`;
+CREATE TABLE IF NOT EXISTS `paramchamp` (
+  `PARAMCHAMPID` bigint NOT NULL,
+  `TYPEIMPOTID` varchar(10) NOT NULL,
+  `TYP_TYPEIMPOTID` varchar(10) NOT NULL,
+  `PARAMCHAMPCODE` varchar(10) DEFAULT NULL,
+  `PARAMCHAMPLIB` varchar(255) DEFAULT NULL,
+  `PARAMCHAMPTYPE` enum('SAISIE','CALCULE') DEFAULT NULL,
+  `PARAMCHAMPCONTRAINTE` enum('OBLIGATOIRE','FACULTATIF') DEFAULT NULL,
+  `PARAMCHAMPFORMULE` varchar(255) DEFAULT NULL,
+  `PARAMCHAMPTAUX` decimal(3,2) DEFAULT NULL,
+  `PARAMCHAMPSTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`PARAMCHAMPID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `paramperiode`
+--
+
+DROP TABLE IF EXISTS `paramperiode`;
+CREATE TABLE IF NOT EXISTS `paramperiode` (
+  `PARAMPERIODEID` int NOT NULL,
+  `MODEDECLARATIONID` int NOT NULL,
+  `PARAMPERIODELIB` varchar(1024) DEFAULT NULL,
+  `PARAMPERIODEDEBMOIS` decimal(8,0) DEFAULT NULL,
+  `PARAMPERIODEFINMOIS` decimal(8,0) DEFAULT NULL,
+  `PARAMPERIODESTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`PARAMPERIODEID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `paramtable`
+--
+
+DROP TABLE IF EXISTS `paramtable`;
+CREATE TABLE IF NOT EXISTS `paramtable` (
+  `PARAMTABLEID` int NOT NULL,
+  `PARAMTABLENOM` varchar(1024) DEFAULT NULL,
+  `PARAMTABLELIB` varchar(1024) DEFAULT NULL,
+  `PARAMTABLESTATUT` enum('NC','BROUILLON','REJETE','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`PARAMTABLEID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `periodedeclaration`
+--
+
+DROP TABLE IF EXISTS `periodedeclaration`;
+CREATE TABLE IF NOT EXISTS `periodedeclaration` (
+  `PERIODEDECLAID` int NOT NULL,
+  `ANNEEFISCALEID` int NOT NULL,
+  `MODEDECLARATIONID` int NOT NULL,
+  `IMPOTCATID` int NOT NULL,
+  `PERIODEDECLADATEDEBUT` date DEFAULT NULL,
+  `PERIODEDECLADATEFIN` date DEFAULT NULL,
+  `PERIODEDECLALIBMOIS` longtext,
+  `PERIODEDECLATAUXPENALITE` decimal(3,2) DEFAULT NULL,
+  `PERIODEDECLADATETOLERANCE` date DEFAULT NULL,
+  `PERIODEDECLASTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`PERIODEDECLAID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Janvier 2023, \r\nJanv - Mars 2023,\r\nJan - Juin 2023';
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `pjdeclaration`
+--
+
+DROP TABLE IF EXISTS `pjdeclaration`;
+CREATE TABLE IF NOT EXISTS `pjdeclaration` (
+  `PJDECLARATIONID` bigint NOT NULL,
+  `DECLARATIONID` bigint NOT NULL,
+  `TYPEPIECEJOINTEID` int NOT NULL,
+  `PJDECLARATIONFICHIER` varchar(1024) DEFAULT NULL,
+  `PJDECLARATIONDATE` date DEFAULT NULL,
+  `PJDECLARATIONSTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`PJDECLARATIONID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `tbddeclarationagence`
+--
+
+DROP TABLE IF EXISTS `tbddeclarationagence`;
+CREATE TABLE IF NOT EXISTS `tbddeclarationagence` (
+  `TBDDECLARATIONAGENCEID` bigint NOT NULL,
+  `TBDDECLARATIONAGENCEDATE` date DEFAULT NULL,
+  `TBDDECLARATIONAGENCECENTREID` bigint DEFAULT NULL,
+  `TBDDECLARATIONAGENCEMONT` float(15,2) DEFAULT NULL,
+  `TBDDECLARATIONAGENCEDATECREA` datetime DEFAULT NULL,
+  `TBDDECLARATIONAGENCE` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`TBDDECLARATIONAGENCEID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `tdbdeclaration`
+--
+
+DROP TABLE IF EXISTS `tdbdeclaration`;
+CREATE TABLE IF NOT EXISTS `tdbdeclaration` (
+  `TDBDECLARATIONID` bigint NOT NULL AUTO_INCREMENT,
+  `TDBDECLARATIONDATE` date DEFAULT NULL,
+  `TDBDECLARATIONMONT` float(15,2) DEFAULT NULL,
+  `TDBDECLARATIONDATECREA` datetime DEFAULT NULL,
+  `TDBDECLARATIONSTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`TDBDECLARATIONID`)
+) ENGINE=MyISAM AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `tdbdeclaration`
+--
+
+INSERT INTO `tdbdeclaration` (`TDBDECLARATIONID`, `TDBDECLARATIONDATE`, `TDBDECLARATIONMONT`, `TDBDECLARATIONDATECREA`, `TDBDECLARATIONSTATUT`) VALUES
+(3, '2022-12-19', 12000.00, '2022-12-19 17:05:13', 'VALIDE'),
+(1, '2022-12-19', 11000.00, '2022-12-19 17:05:13', 'VALIDE'),
+(2, '2022-12-19', 19000.00, '2022-12-19 17:05:13', 'VALIDE'),
+(4, '2022-12-11', 20000.00, NULL, 'VALIDE'),
+(5, '2022-12-12', 12000.00, NULL, 'VALIDE'),
+(6, '2022-12-14', 14000.00, NULL, 'VALIDE'),
+(7, '2022-12-17', 18000.00, NULL, 'VALIDE'),
+(8, '2022-12-18', 17000.00, NULL, 'VALIDE'),
+(9, '2022-12-19', 15000.00, NULL, 'VALIDE'),
+(10, '2022-12-20', 13000.00, NULL, 'VALIDE'),
+(11, '2022-12-10', 12000.00, NULL, 'VALIDE'),
+(12, '2022-12-09', 12000.00, NULL, 'VALIDE');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `tdbpaiement`
+--
+
+DROP TABLE IF EXISTS `tdbpaiement`;
+CREATE TABLE IF NOT EXISTS `tdbpaiement` (
+  `TDBPAIEMENTID` bigint NOT NULL AUTO_INCREMENT,
+  `TDBPAIEMENTDATE` date DEFAULT NULL,
+  `TDBPAIEMENTMONT` float(15,2) DEFAULT NULL,
+  `TDBPAIEMENTDATECREA` datetime DEFAULT NULL,
+  `TDBPAIEMENTSTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`TDBPAIEMENTID`)
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Déchargement des données de la table `tdbpaiement`
+--
+
+INSERT INTO `tdbpaiement` (`TDBPAIEMENTID`, `TDBPAIEMENTDATE`, `TDBPAIEMENTMONT`, `TDBPAIEMENTDATECREA`, `TDBPAIEMENTSTATUT`) VALUES
+(1, '2022-12-11', 16000.00, '2022-12-20 08:31:12', NULL),
+(2, '2022-12-12', 12000.00, '2022-12-20 08:30:45', 'VALIDE'),
+(3, '2022-12-13', 14000.00, '2022-12-20 08:31:28', 'VALIDE'),
+(4, '2022-12-14', 23000.00, '2022-12-20 08:31:28', 'VALIDE'),
+(5, '2022-12-15', 17000.00, '2022-12-20 08:33:31', 'VALIDE'),
+(6, '2022-12-16', 30000.00, NULL, 'VALIDE'),
+(7, '2022-12-17', 13000.00, NULL, 'VALIDE'),
+(8, '2022-12-18', 12000.00, NULL, 'VALIDE'),
+(9, '2022-12-09', 23000.00, NULL, 'VALIDE');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `tdbpaiementagence`
+--
+
+DROP TABLE IF EXISTS `tdbpaiementagence`;
+CREATE TABLE IF NOT EXISTS `tdbpaiementagence` (
+  `TDBPAIEMENTAGENCEID` bigint NOT NULL,
+  `TDBPAIEMENTAGENCEDATE` date DEFAULT NULL,
+  `TDBPAIEMENTAGENCECENTREID` bigint DEFAULT NULL,
+  `TDBPAIEMENTAGENCEMONT` float(15,2) DEFAULT NULL,
+  `TDBPAIEMENTAGENCEDATECREA` datetime DEFAULT NULL,
+  `TDBPAIEMENTAGENCESTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`TDBPAIEMENTAGENCEID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `typedeclaration`
+--
+
+DROP TABLE IF EXISTS `typedeclaration`;
+CREATE TABLE IF NOT EXISTS `typedeclaration` (
+  `TYPEDECLARATIONID` int NOT NULL,
+  `TYPEDECLARATIONLIB` varchar(1024) DEFAULT NULL,
+  `TYPEDECLARATIONTITRE` varchar(1024) DEFAULT NULL,
+  `TYPEDECLARATIONSTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`TYPEDECLARATIONID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='DECLARATION,\r\nAVIS IMPOSITION,\r\nPENALITE';
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `typeimpot`
+--
+
+DROP TABLE IF EXISTS `typeimpot`;
+CREATE TABLE IF NOT EXISTS `typeimpot` (
+  `TYPEIMPOTID` varchar(10) NOT NULL,
+  `CLASSEFISCALEID` varchar(10) NOT NULL,
+  `CLA_CLASSEFISCALEID` varchar(10) NOT NULL,
+  `TYPEIMPOTCODE` varchar(10) DEFAULT NULL,
+  `TYPEIMPOTLIB` varchar(255) DEFAULT NULL,
+  `TYPEIMPOTSTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`TYPEIMPOTID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='AIRSI,\r\nIGR,\r\nTVA,\r\netc.';
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `typepiecejointe`
+--
+
+DROP TABLE IF EXISTS `typepiecejointe`;
+CREATE TABLE IF NOT EXISTS `typepiecejointe` (
+  `TYPEPIECEJOINTEID` int NOT NULL,
+  `TYPEPIECEJOINTELIB` longtext,
+  PRIMARY KEY (`TYPEPIECEJOINTEID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `usager`
+--
+
+DROP TABLE IF EXISTS `usager`;
+CREATE TABLE IF NOT EXISTS `usager` (
+  `USAGERID` bigint NOT NULL,
+  `CATUSAGERID` varchar(20) NOT NULL,
+  `USAGERRAISONSOCIALE` varchar(1024) DEFAULT NULL,
+  `USAGERREGISTRE` varchar(1024) DEFAULT NULL,
+  `USAGERCOMPTECONTRIB` varchar(1024) DEFAULT NULL,
+  `USAGERDATEOUVERTURE` date DEFAULT NULL,
+  `USAGERNOMRESPONSABLE` varchar(1024) DEFAULT NULL,
+  `USAGERSTATUT` enum('BROUILLON','SUPPRIME','VALIDE') DEFAULT NULL,
+  PRIMARY KEY (`USAGERID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
